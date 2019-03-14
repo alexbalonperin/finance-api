@@ -15,7 +15,6 @@ object HelloWorldServer extends IOApp {
 
   implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
-
   def helloWorldService = new HelloWorldService().service
   val httpApp = Router("/" -> helloWorldService).orNotFound
 
