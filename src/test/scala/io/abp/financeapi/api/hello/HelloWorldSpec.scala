@@ -1,4 +1,4 @@
-package io.abp.financeapi
+package io.abp.financeapi.api.hello
 
 import cats.effect.IO
 import org.http4s._
@@ -18,7 +18,7 @@ class HelloWorldSpec extends org.specs2.mutable.Specification {
 
   private[this] val retHelloWorld: Response[IO] = {
     val getHW = Request[IO](Method.GET, Uri.uri("/hello/world"))
-    new HelloWorldService[IO].service.orNotFound(getHW).unsafeRunSync()
+    new Routes[IO].routes.orNotFound(getHW).unsafeRunSync()
   }
 
   private[this] def uriReturns200(): MatchResult[Status] =

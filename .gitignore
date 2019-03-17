@@ -6,3 +6,6 @@ tags
 .*.swo
 
 .DS_Store
+
+.metals/
+.bloop/
