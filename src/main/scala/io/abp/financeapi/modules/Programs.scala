@@ -8,7 +8,7 @@ object Programs {
   def company[F[_]](
       companyService: CompanyService[F]
   )(
-    implicit F: Async[F]
+      implicit F: Async[F]
   ): F[CompanyProgram[F]] =
     F.pure(CompanyProgram[F](companyService))
 }

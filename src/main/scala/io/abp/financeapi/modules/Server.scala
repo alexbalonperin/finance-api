@@ -26,7 +26,7 @@ final case class Server[F[_]: ConcurrentEffect: Timer](
 
   val program: Stream[F, ExitCode] =
     BlazeServerBuilder[F]
-      .bindHttp(config.port.value, config.host.value)
+      .bindHttp(config.port.value, config.host)
       .withHttpApp(
         middleware(
           config.timeout,

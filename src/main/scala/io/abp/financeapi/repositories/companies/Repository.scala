@@ -6,5 +6,4 @@ trait Repository[F[_]] {
   def list(): F[List[Company]]
 }
 
-object Repository {
-}
+object Repository {}

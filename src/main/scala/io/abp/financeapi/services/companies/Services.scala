@@ -10,16 +10,15 @@ trait Algebra[F[_]] {
 
 object Services {
   def default[F[_]](
-    companyRepository: CompanyRepository[F]
+      companyRepository: CompanyRepository[F]
   )(
-    implicit F: Sync[F]
+      implicit F: Sync[F]
   ): F[Algebra[F]] =
     F.pure(new Default[F](companyRepository))
 }
 
-
 final class Default[F[_]: Sync](
-  companyRepository: CompanyRepository[F]
+    companyRepository: CompanyRepository[F]
 ) extends Algebra[F] {
   def list(): F[List[Company]] = companyRepository.list()
 }
