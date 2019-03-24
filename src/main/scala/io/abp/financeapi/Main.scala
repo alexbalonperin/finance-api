@@ -4,7 +4,7 @@ import cats.effect.{IO, ConcurrentEffect, IOApp, ContextShift, ExitCode, Timer}
 import cats.syntax.functor._
 import fs2.Stream
 import io.abp.financeapi.config.ApplicationConfig
-import io.abp.financeapi.modules.{Server, Apis}
+import io.abp.financeapi.modules._
 
 object Main extends IOApp {
 
@@ -14,8 +14,10 @@ object Main extends IOApp {
   def program[F[_]: ConcurrentEffect: ContextShift: Timer](): Stream[F, Unit] =
     for {
       config <- Stream.eval(ApplicationConfig.apply)
-      apis ← Stream.emit(Apis())
-      //connection <- Stream.emit(PostgresConnections(config.db))
+      repositories <- Stream.emit(Repositories(config.db))
+      services <- Stream.emit(Services(repositories))
+      programs <- Stream.emit(Programs(services))
+      apis ← Stream.emit(Apis(programs))
       server ← Stream.emit(Server(apis, config.api))
       _ ← server.program
     } yield ()

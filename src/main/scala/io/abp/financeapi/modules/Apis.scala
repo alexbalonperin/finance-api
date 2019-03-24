@@ -10,9 +10,11 @@ final case class Apis[F[_]](
 )
 
 object Apis {
-  def apply[F[_]: Sync](): Apis[F] =
+  def apply[F[_]: Sync](
+      programs: Programs[F]
+  ): Apis[F] =
     Apis(
-      CompanyRoutes(),
+      CompanyRoutes(programs.companiesProgram),
       HelloRoutes()
     )
 }

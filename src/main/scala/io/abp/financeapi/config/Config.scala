@@ -8,9 +8,9 @@ import cats.syntax.flatMap._
 import cats.syntax.functor._
 import ciris.cats.effect._
 import ciris.refined._
+import ciris.Secret
 import eu.timepit.refined.auto._
 import eu.timepit.refined.types.net.UserPortNumber
-
 
 final case class ApplicationConfig(
     api: ApiConfig,
@@ -24,9 +24,10 @@ object ApplicationConfig {
       responseLogsConfig <- HttpMessageLogsConfig.responseLogsConfig()
       apiConfig <- ApiConfig(requestLogsConfig, responseLogsConfig)
       dbConfig <- DBConfig()
-    } yield ApplicationConfig(
-      apiConfig,
-      dbConfig
+    } yield
+      ApplicationConfig(
+        apiConfig,
+        dbConfig
       )
 }
 
@@ -41,8 +42,8 @@ object ApiConfig {
   type Host = String
 
   def apply[F[_]: MonadError[?[_], Throwable]](
-    requestLogsConfig: HttpMessageLogsConfig,
-    responseLogsConfig: HttpMessageLogsConfig
+      requestLogsConfig: HttpMessageLogsConfig,
+      responseLogsConfig: HttpMessageLogsConfig
   ): F[ApiConfig] =
     (loadConfig(
       envF[F, Host]("API_HOST"),
@@ -59,7 +60,6 @@ object ApiConfig {
     }).orRaiseThrowable
 }
 
-
 final case class HttpMessageLogsConfig(
     logHeaders: Boolean,
     logBody: Boolean
@@ -67,28 +67,34 @@ final case class HttpMessageLogsConfig(
   val log: Boolean = logHeaders || logBody
 }
 object HttpMessageLogsConfig {
-  def requestLogsConfig[F[_]: MonadError[?[_], Throwable]](): F[HttpMessageLogsConfig] =
+  def requestLogsConfig[F[_]: MonadError[?[_], Throwable]]()
+      : F[HttpMessageLogsConfig] =
     loadConfig(
       envF[F, Boolean]("API_REQUEST_LOG_CONFIG_HEADER"),
-      envF[F, Boolean]("API_REQUEST_LOG_CONFIG_BODY"),
-     )(HttpMessageLogsConfig(_, _)).orRaiseThrowable
+      envF[F, Boolean]("API_REQUEST_LOG_CONFIG_BODY")
+    )(HttpMessageLogsConfig(_, _)).orRaiseThrowable
 
-  def responseLogsConfig[F[_]: MonadError[?[_], Throwable]](): F[HttpMessageLogsConfig] =
+  def responseLogsConfig[F[_]: MonadError[?[_], Throwable]]()
+      : F[HttpMessageLogsConfig] =
     loadConfig(
       envF[F, Boolean]("API_RESPONSE_LOG_CONFIG_HEADER"),
-      envF[F, Boolean]("API_RESPONSE_LOG_CONFIG_BODY"),
+      envF[F, Boolean]("API_RESPONSE_LOG_CONFIG_BODY")
     )(HttpMessageLogsConfig(_, _)).orRaiseThrowable
 }
 
 final case class DBConfig(
     driver: String,
-    url: String
+    url: Secret[String],
+    user: Secret[String],
+    password: Secret[String]
 )
 
 object DBConfig {
   def apply[F[_]: MonadError[?[_], Throwable]](): F[DBConfig] =
     loadConfig(
       envF[F, String]("DATABASE_DRIVER"),
-      envF[F, String]("DATABASE_URL")
-    )(DBConfig(_, _)).orRaiseThrowable
+      envF[F, Secret[String]]("DATABASE_URL"),
+      envF[F, Secret[String]]("DATABASE_USER"),
+      envF[F, Secret[String]]("DATABASE_PASSWORD")
+    )(DBConfig(_, _, _, _)).orRaiseThrowable
 }
