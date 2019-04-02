@@ -14,4 +14,6 @@ object Services {
     Services(
       CompaniesServices.default(repositories.companiesRepository)
     )
+
+  def dummy[F[_]: Sync](): Services[F] = Services(CompaniesServices.dummy[F])
 }
