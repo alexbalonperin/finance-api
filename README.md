@@ -1,4 +1,5 @@
 ## Finance API
+[![Build Status](https://travis-ci.org/zolrag13/finance-api.svg?branch=master)](https://travis-ci.org/zolrag13/finance-api)
 
 ### Overview
 
