@@ -4,8 +4,8 @@ import eu.timepit.refined.types.numeric.NonNegInt
 import eu.timepit.refined.auto._
 
 package object api {
-  type HelloRoutes[F[_]] = hello.Routes[F]
-  val HelloRoutes = hello.Routes
+  type HealthzRoutes[F[_]] = healthz.Routes[F]
+  val HealthzRoutes = healthz.Routes
   type CompanyRoutes[F[_]] = companies.Routes[F]
   val CompanyRoutes = companies.Routes
 

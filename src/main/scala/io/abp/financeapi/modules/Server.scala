@@ -22,7 +22,7 @@ final case class Server[F[_]: ConcurrentEffect: Timer](
     config: ApiConfig
 ) {
   val routes: HttpRoutes[F] =
-    apis.hello.routes <+> apis.companies.routes
+    apis.healthz.routes <+> apis.companies.routes
 
   val program: Stream[F, ExitCode] =
     BlazeServerBuilder[F]

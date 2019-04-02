@@ -6,7 +6,7 @@ import io.abp.financeapi.api._
 
 final case class Apis[F[_]](
     companies: CompanyRoutes[F],
-    hello: HelloRoutes[F]
+    healthz: HealthzRoutes[F]
 )
 
 object Apis {
@@ -15,6 +15,6 @@ object Apis {
   ): Apis[F] =
     Apis(
       CompanyRoutes(programs.companiesProgram),
-      HelloRoutes()
+      HealthzRoutes()
     )
 }

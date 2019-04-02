@@ -12,12 +12,14 @@ trait Algebra[F[_]] {
 }
 
 object Services {
-  def default[F[_]](
+  def default[F[_]: Sync](
       companiesRepository: CompaniesRepository[F]
-  )(
-      implicit F: Sync[F]
   ): Algebra[F] =
     new Default[F](companiesRepository)
+
+  def dummy[F[_]: Sync]()(
+  ): Algebra[F] =
+    new Dummy[F]()
 
   final case class CompanyListRequest(limit: NonNegInt, offset: NonNegInt)
 
@@ -30,4 +32,9 @@ final class Default[F[_]: Sync](
 ) extends Algebra[F] {
   def list(request: Services.CompanyListRequest): fs2.Stream[F, Company] =
     companiesRepository.list(request.limit, request.offset)
+}
+
+final class Dummy[F[_]](implicit F: Sync[F]) extends Algebra[F] {
+  def list(request: Services.CompanyListRequest): fs2.Stream[F, Company] =
+    fs2.Stream.eval(F.pure(Company(Company.Name("Apple"))))
 }
