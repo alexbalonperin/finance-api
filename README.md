@@ -1,5 +1,4 @@
 ## Finance API
------------
 
 ### Overview
 
