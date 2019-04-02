@@ -46,3 +46,5 @@ lazy val root = (project in file("."))
       "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
     )
   )
+
+addCommandAlias("build", ";compile;test")
