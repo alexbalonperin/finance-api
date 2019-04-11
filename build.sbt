@@ -3,7 +3,8 @@ val CirceFs2Version = "0.11.0"
 val CirceVersion = "0.11.1"
 val CirisVersion = "0.12.1"
 val DoobieVersion = "0.6.0"
-val Http4sVersion = "0.20.0-M6"
+val Http4sVersion = "0.20.0-RC1"
+val Http4sRhoVersion = "0.19.0-M7"
 val LogbackVersion = "1.2.3"
 val PureConfigVersion = "0.10.2"
 val RefinedVersion = "0.9.4"
@@ -34,6 +35,7 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
       "org.http4s" %% "http4s-circe" % Http4sVersion,
       "org.http4s" %% "http4s-dsl" % Http4sVersion,
+      "org.http4s" %% "rho-swagger" % Http4sRhoVersion,
       "org.tpolecat" %% "doobie-core" % DoobieVersion,
       "org.tpolecat" %% "doobie-postgres" % DoobieVersion,
       "org.tpolecat" %% "doobie-refined" % DoobieVersion,

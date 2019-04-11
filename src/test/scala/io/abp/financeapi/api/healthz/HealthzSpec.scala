@@ -18,7 +18,7 @@ class HealthzSpec extends org.specs2.mutable.Specification {
     val get = Request[IO](Method.GET, Uri.uri("/healthz"))
     val result = for {
       route ← Stream.emit(Routes[IO]())
-    } yield route.routes.orNotFound(get)
+    } yield route.toRoutes().orNotFound(get)
     result.compile.toList.head.unsafeRunSync
   }
 

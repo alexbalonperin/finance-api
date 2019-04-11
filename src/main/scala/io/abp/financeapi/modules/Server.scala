@@ -2,7 +2,6 @@ package io.abp.financeapi.modules
 
 import cats.effect.{ConcurrentEffect, ExitCode, Timer}
 import cats.arrow.FunctionK
-import cats.syntax.semigroupk._
 import fs2.Stream
 import io.abp.financeapi.config._
 import org.http4s.server.DefaultServiceErrorHandler
@@ -16,13 +15,17 @@ import org.http4s.server.middleware.{
 import org.http4s.syntax.kleisli._
 import org.http4s.{HttpApp, HttpRoutes}
 import scala.concurrent.duration.FiniteDuration
+import org.http4s.rho.swagger.SwaggerSupport
 
 final case class Server[F[_]: ConcurrentEffect: Timer](
     apis: Apis[F],
     config: ApiConfig
-) {
-  val routes: HttpRoutes[F] =
-    apis.healthz.routes <+> apis.companies.routes
+) extends SwaggerSupport {
+  val aggregateSwaggerRoutes =
+    createSwagger()(apis.healthz.getRoutes ++ apis.companies.getRoutes)
+  val swaggerRoutes = createSwaggerRoute(aggregateSwaggerRoutes)
+
+  val routes: HttpRoutes[F] = swaggerRoutes.toRoutes()
 
   val program: Stream[F, ExitCode] =
     BlazeServerBuilder[F]

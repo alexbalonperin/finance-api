@@ -2,10 +2,10 @@ package io.abp.financeapi.api.companies
 
 import cats.effect.IO
 import org.http4s.{Request, Response, Method, Status, Uri}
+import org.http4s.syntax.kleisli._
 import org.specs2.matcher.MatchResult
 import fs2.Stream
 import io.abp.financeapi.programs.CompaniesPrograms
-import org.http4s.syntax.kleisli._
 
 class CompaniesSpec extends org.specs2.mutable.Specification {
 
@@ -20,7 +20,7 @@ class CompaniesSpec extends org.specs2.mutable.Specification {
     val result = for {
       program <- Stream.emit(CompaniesPrograms.dummy[IO])
       route ← Stream.emit(Routes(program))
-    } yield route.routes.orNotFound(getCompanies)
+    } yield route.toRoutes().orNotFound(getCompanies)
     result.compile.toList.head.unsafeRunSync
   }
 
