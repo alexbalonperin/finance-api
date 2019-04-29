@@ -21,11 +21,8 @@ final case class Server[F[_]: ConcurrentEffect: Timer](
     apis: Apis[F],
     config: ApiConfig
 ) extends SwaggerSupport {
-  val aggregateSwaggerRoutes =
-    createSwagger()(apis.healthz.getRoutes ++ apis.companies.getRoutes)
-  val swaggerRoutes = createSwaggerRoute(aggregateSwaggerRoutes)
-
-  val routes: HttpRoutes[F] = swaggerRoutes.toRoutes()
+  val aggregateRoutes = apis.healthz.and(apis.companies)
+  val routes = aggregateRoutes.toRoutes(createRhoMiddleware())
 
   val program: Stream[F, ExitCode] =
     BlazeServerBuilder[F]
