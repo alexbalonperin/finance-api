@@ -8,31 +8,49 @@ import io.scalaland.chimney.dsl._
 
 trait Algebra[F[_]] {
   def list(
-      request: Program.CompanyListRequest
+      request: Program.ListRequest
   ): fs2.Stream[F, Company]
+
+  def get(request: Program.GetRequest): fs2.Stream[F, Company]
 }
 
 final case class Program[F[_]](
     companiesService: CompaniesService[F]
 ) extends Algebra[F] {
   def list(
-      request: Program.CompanyListRequest
+      request: Program.ListRequest
   ): fs2.Stream[F, Company] = {
     val servicesRequest =
-      request.into[CompaniesServices.CompanyListRequest].transform
+      request.into[CompaniesServices.ListRequest].transform
     companiesService.list(servicesRequest)
+  }
+
+  def get(request: Program.GetRequest): fs2.Stream[F, Company] = {
+    val servicesRequest = request.into[CompaniesServices.GetRequest].transform
+    companiesService.get(servicesRequest)
   }
 }
 
 
 final case class Dummy[F[_]: Monad]() extends Algebra[F] {
   def list(
-      request: Program.CompanyListRequest
-  ): fs2.Stream[F, Company] = fs2.Stream.eval(Monad[F].pure(Company(Company.Name("Apple"))))
+      request: Program.ListRequest
+  ): fs2.Stream[F, Company] = fs2.Stream.eval(
+    Monad[F].pure(
+      Company(Company.Id("123"), Company.Name("Apple"))
+    )
+  )
+
+  def get(request: Program.GetRequest): fs2.Stream[F, Company] = fs2.Stream.eval(
+      Monad[F].pure(
+        Company(Company.Id(request.id.asString), Company.Name("Apple"))
+      )
+    )
 }
 
 object Program {
-  final case class CompanyListRequest(limit: NonNegInt, offset: NonNegInt)
+  final case class ListRequest(limit: NonNegInt, offset: NonNegInt)
+  final case class GetRequest(id: Company.Id)
 
   def dummy[F[_]: Monad] = Dummy[F]()
 }

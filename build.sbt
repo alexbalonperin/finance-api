@@ -9,10 +9,12 @@ val LogbackVersion = "1.2.3"
 val PureConfigVersion = "0.10.2"
 val RefinedVersion = "0.9.4"
 val Specs2Version = "4.1.0"
+val NewTypeVersion = "0.4.2"
 
 //Compiler plugins
-val KindProjectorVersion = "0.9.6"
 val BetterMonadicForVersion = "0.2.4"
+val KindProjectorVersion = "0.9.6"
+val MacroParadiseVersion = "2.1.1"
 
 lazy val root = (project in file("."))
   .settings(
@@ -27,6 +29,7 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-core" % CirceVersion,
       "io.circe" %% "circe-fs2" % CirceFs2Version,
       "io.circe" %% "circe-generic-extras" % CirceVersion,
+      "io.estatico" %% "newtype" % NewTypeVersion,
       "io.scalaland" %% "chimney" % ChimneyVersion,
       "is.cir" %% "ciris-cats" % CirisVersion,
       "is.cir" %% "ciris-cats-effect" % CirisVersion,
@@ -43,6 +46,9 @@ lazy val root = (project in file("."))
     ),
     addCompilerPlugin(
       "org.spire-math" %% "kind-projector" % KindProjectorVersion
+    ),
+    addCompilerPlugin(
+      "org.scalamacros" % "paradise" % MacroParadiseVersion cross CrossVersion.full
     ),
     addCompilerPlugin(
       "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion

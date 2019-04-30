@@ -13,12 +13,15 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 
 object Protocol {
 
-  implicit val encoder: Encoder[Company] = deriveEncoder[Company]
+  implicit val encoder: Encoder[CompanyResponse] = deriveEncoder[CompanyResponse]
+  implicit def toResponse[F[_]](company: Stream[F, Company]): Stream[F, CompanyResponse] = company.map(toResponse)
+  def toResponse[F[_]](company: Company): CompanyResponse = CompanyResponse(
+    CompanyResponse.Id(company.id.asString),
+    CompanyResponse.Name(company.name.asString)
+  )
 
-  implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]
-      : EntityDecoder[F, A] = jsonOf[F, A]
-  implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]
-      : EntityEncoder[F, A] = jsonEncoderOf[F, A]
+  implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
+  implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
   implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
   implicit def valueClassDecoder[A: UnwrappedDecoder]: Decoder[A] = implicitly
 
@@ -33,4 +36,14 @@ object Protocol {
       stream: Stream[F, A]
   )(implicit E: Encoder[A]): Stream[F, Json] =
     streamArrayToString(stream).through(stringArrayParser)
+
+  import CompanyResponse._
+
+  case class CompanyResponse(id: Id, name: Name)
+
+  object CompanyResponse {
+    case class Id(asString: String) extends AnyVal
+    case class Name(asString: String) extends AnyVal
+  }
+
 }

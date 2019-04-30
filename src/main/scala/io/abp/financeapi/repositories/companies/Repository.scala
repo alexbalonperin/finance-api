@@ -6,10 +6,13 @@ import doobie.implicits._
 import doobie.util.query.Query
 import eu.timepit.refined.types.numeric.NonNegInt
 import io.abp.financeapi.config.DBConfig
+
 import io.abp.financeapi.domain.Company
+import io.abp.financeapi.repositories.Protocol.{ Company => PCompany, _ }
 
 trait Repository[F[_]] {
   def list(limit: NonNegInt, offset: NonNegInt): fs2.Stream[F, Company]
+  def get(id: Company.Id): fs2.Stream[F, Company]
 }
 
 object Repository {
@@ -44,10 +47,19 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
 
   def list(limit: NonNegInt, offset: NonNegInt): fs2.Stream[F, Company] = {
 
-    val sql = """select name from companies limit ? offset ?"""
+    val sql = """select id, name from companies limit ? offset ?"""
 
-    val query = Query[(NonNegInt, NonNegInt), Company](sql)
+    val query = Query[(NonNegInt, NonNegInt), PCompany](sql)
       .stream((limit, offset))
-    query.transact(connection.value)
+    query.transact(connection.value).map(toDomain)
+  }
+
+  def get(id: Company.Id): fs2.Stream[F, Company] = {
+
+    val sql = """select id, name from companies where id = ?"""
+
+    val query = Query[String, PCompany](sql)
+      .stream(id.asString)
+    query.transact(connection.value).map(toDomain)
   }
 }

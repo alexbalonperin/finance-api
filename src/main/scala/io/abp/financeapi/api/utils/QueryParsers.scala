@@ -1,4 +1,4 @@
-package io.abp.financeapi.api
+package io.abp.financeapi.api.utils
 
 import cats.Monad
 import scala.util.Try
