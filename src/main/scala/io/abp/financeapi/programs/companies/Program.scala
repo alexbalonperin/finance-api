@@ -37,14 +37,12 @@ final case class Dummy[F[_]: Monad]() extends Algebra[F] {
       request: Program.ListRequest
   ): fs2.Stream[F, Company] = fs2.Stream.eval(
     Monad[F].pure(
-      Company(Company.Id("123"), Company.Name("Apple"))
+      Company.dummy
     )
   )
 
   def get(request: Program.GetRequest): fs2.Stream[F, Company] = fs2.Stream.eval(
-      Monad[F].pure(
-        Company(Company.Id(request.id.asString), Company.Name("Apple"))
-      )
+    Monad[F].pure(Company.dummy.copy(id = request.id))
     )
 }
 

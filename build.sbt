@@ -6,10 +6,8 @@ val DoobieVersion = "0.6.0"
 val Http4sVersion = "0.20.0"
 val Http4sRhoVersion = "0.19.0-M8"
 val LogbackVersion = "1.2.3"
-val PureConfigVersion = "0.10.2"
 val RefinedVersion = "0.9.4"
 val Specs2Version = "4.1.0"
-val NewTypeVersion = "0.4.2"
 
 //Compiler plugins
 val BetterMonadicForVersion = "0.2.4"
@@ -24,12 +22,10 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % LogbackVersion,
-      "com.github.pureconfig" %% "pureconfig" % PureConfigVersion,
       "eu.timepit" %% "refined" % RefinedVersion,
       "io.circe" %% "circe-core" % CirceVersion,
       "io.circe" %% "circe-fs2" % CirceFs2Version,
       "io.circe" %% "circe-generic-extras" % CirceVersion,
-      "io.estatico" %% "newtype" % NewTypeVersion,
       "io.scalaland" %% "chimney" % ChimneyVersion,
       "is.cir" %% "ciris-cats" % CirisVersion,
       "is.cir" %% "ciris-cats-effect" % CirisVersion,

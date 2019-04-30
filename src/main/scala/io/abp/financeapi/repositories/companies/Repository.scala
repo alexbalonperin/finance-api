@@ -8,7 +8,7 @@ import eu.timepit.refined.types.numeric.NonNegInt
 import io.abp.financeapi.config.DBConfig
 
 import io.abp.financeapi.domain.Company
-import io.abp.financeapi.repositories.Protocol.{ Company => PCompany, _ }
+import io.abp.financeapi.repositories.Protocol._
 
 trait Repository[F[_]] {
   def list(limit: NonNegInt, offset: NonNegInt): fs2.Stream[F, Company]
@@ -36,29 +36,42 @@ object Repository {
         )
       )
   }
+
+  val columns = List(
+    "id",
+    "name",
+    "symbol",
+    "liquidated",
+    "delisted",
+    "active",
+    "last_trade_date",
+    "first_trade_date"
+  )
+  val columnsAsString = columns.mkString(",")
 }
 
 final case class PostgresRepository[F[_]: Async: ContextShift](
     connection: Repository.Connection[F]
 ) extends Repository[F] {
+  import Repository._
 
   implicit val NonNegIntComposite: Write[NonNegInt] =
     Write[Int].contramap(_.value)
 
   def list(limit: NonNegInt, offset: NonNegInt): fs2.Stream[F, Company] = {
 
-    val sql = """select id, name from companies limit ? offset ?"""
+    val sql = s"""select ${columnsAsString} from companies limit ? offset ?"""
 
-    val query = Query[(NonNegInt, NonNegInt), PCompany](sql)
+    val query = Query[(NonNegInt, NonNegInt), CompanyRow](sql)
       .stream((limit, offset))
     query.transact(connection.value).map(toDomain)
   }
 
   def get(id: Company.Id): fs2.Stream[F, Company] = {
 
-    val sql = """select id, name from companies where id = ?"""
+    val sql = s"""select ${columnsAsString} from companies where id = ?"""
 
-    val query = Query[String, PCompany](sql)
+    val query = Query[String, CompanyRow](sql)
       .stream(id.asString)
     query.transact(connection.value).map(toDomain)
   }

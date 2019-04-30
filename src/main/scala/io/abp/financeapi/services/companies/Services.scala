@@ -42,8 +42,8 @@ final class Default[F[_]: Sync](
 
 final class Dummy[F[_]](implicit F: Sync[F]) extends Algebra[F] {
   def list(request: Services.ListRequest): fs2.Stream[F, Company] =
-    fs2.Stream.eval(F.pure(Company(Company.Id("123"), Company.Name("Apple"))))
+    fs2.Stream.eval(F.pure(Company.dummy))
 
   def get(request: Services.GetRequest): fs2.Stream[F, Company] =
-    fs2.Stream.eval(F.pure(Company(Company.Id(request.id.asString), Company.Name("Apple"))))
+    fs2.Stream.eval(F.pure(Company.dummy.copy(id = request.id)))
 }

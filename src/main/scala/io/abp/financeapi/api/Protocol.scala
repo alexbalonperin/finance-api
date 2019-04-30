@@ -1,5 +1,6 @@
 package io.abp.financeapi.api
 
+import java.time.LocalDate
 import cats.effect.Sync
 import fs2.Stream
 import io.abp.financeapi.domain.Company
@@ -10,15 +11,13 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.{Decoder, Encoder, Json}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
+import io.scalaland.chimney.dsl._
 
 object Protocol {
 
   implicit val encoder: Encoder[CompanyResponse] = deriveEncoder[CompanyResponse]
   implicit def toResponse[F[_]](company: Stream[F, Company]): Stream[F, CompanyResponse] = company.map(toResponse)
-  def toResponse[F[_]](company: Company): CompanyResponse = CompanyResponse(
-    CompanyResponse.Id(company.id.asString),
-    CompanyResponse.Name(company.name.asString)
-  )
+  def toResponse[F[_]](company: Company): CompanyResponse = company.into[CompanyResponse].transform
 
   implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
   implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
@@ -39,11 +38,26 @@ object Protocol {
 
   import CompanyResponse._
 
-  case class CompanyResponse(id: Id, name: Name)
+  case class CompanyResponse(
+    id: Id,
+    name: Name,
+    symbol: Symbol,
+    liquidated: Liquidated,
+    delisted: Delisted,
+    active: Active,
+    lastTradeDate: Option[LastTradeDate],
+    firstTradeDate: Option[FirstTradeDate]
+  )
 
   object CompanyResponse {
     case class Id(asString: String) extends AnyVal
     case class Name(asString: String) extends AnyVal
+    case class Symbol(asString: String) extends AnyVal
+    case class Liquidated(asBool: Boolean) extends AnyVal
+    case class Delisted(asBool: Boolean) extends AnyVal
+    case class Active(asBool: Boolean) extends AnyVal
+    case class LastTradeDate(asDate: LocalDate) extends AnyVal
+    case class FirstTradeDate(asDate: LocalDate) extends AnyVal
   }
 
 }
