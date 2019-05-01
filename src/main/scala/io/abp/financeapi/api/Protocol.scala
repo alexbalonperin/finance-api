@@ -5,24 +5,26 @@ import cats.effect.Sync
 import fs2.Stream
 import io.abp.financeapi.domain.Company
 import io.circe.fs2._
-import io.circe.generic.extras.decoding.UnwrappedDecoder
 import io.circe.generic.extras.encoding.UnwrappedEncoder
-import io.circe.generic.semiauto.deriveEncoder
-import io.circe.{Decoder, Encoder, Json}
-import org.http4s.circe.{jsonEncoderOf, jsonOf}
-import org.http4s.{EntityDecoder, EntityEncoder}
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.deriveEncoder
+import io.circe.{Encoder, Json}
+import org.http4s.circe.jsonEncoderOf
+import org.http4s.EntityEncoder
 import io.scalaland.chimney.dsl._
 
 object Protocol {
+
+  implicit val config: Configuration = Configuration.default
+    .withSnakeCaseMemberNames
+    .withSnakeCaseConstructorNames
 
   implicit val encoder: Encoder[CompanyResponse] = deriveEncoder[CompanyResponse]
   implicit def toResponse[F[_]](company: Stream[F, Company]): Stream[F, CompanyResponse] = company.map(toResponse)
   def toResponse[F[_]](company: Company): CompanyResponse = company.into[CompanyResponse].transform
 
-  implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
   implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
   implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
-  implicit def valueClassDecoder[A: UnwrappedDecoder]: Decoder[A] = implicitly
 
   private def streamArrayToString[F[_]: Sync, A](
       stream: Stream[F, A]
