@@ -11,7 +11,9 @@ case class Company(
   delisted: Delisted,
   active: Active,
   lastTradeDate: Option[LastTradeDate],
-  firstTradeDate: Option[FirstTradeDate]
+  firstTradeDate: Option[FirstTradeDate],
+  industry: Industry,
+  sector: Sector
 )
 
 object Company {
@@ -23,6 +25,8 @@ object Company {
   case class Active(asBool: Boolean) extends AnyVal
   case class LastTradeDate(asDate: LocalDate) extends AnyVal
   case class FirstTradeDate(asDate: LocalDate) extends AnyVal
+  case class Industry(asString: String) extends AnyVal
+  case class Sector(asString: String) extends AnyVal
 
   val dummy =
     Company(
@@ -33,6 +37,8 @@ object Company {
       Delisted(false),
       Active(true),
       Some(LastTradeDate(LocalDate.now)),
-      Some(FirstTradeDate(LocalDate.now.minusYears(10)))
+      Some(FirstTradeDate(LocalDate.now.minusYears(10))),
+      Industry("Computer Software: Prepackaged Software"),
+      Sector("Technology")
     )
 }

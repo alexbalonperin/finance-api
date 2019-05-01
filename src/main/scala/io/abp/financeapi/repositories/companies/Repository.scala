@@ -37,7 +37,7 @@ object Repository {
       )
   }
 
-  val columns = List(
+  val companyColumns = List(
     "id",
     "name",
     "symbol",
@@ -47,7 +47,18 @@ object Repository {
     "last_trade_date",
     "first_trade_date"
   )
-  val columnsAsString = columns.mkString(",")
+  val industryColumns = List("name")
+  val sectorColumns = List("name")
+
+  val CompanyPrefix = "c"
+  val IndustryPrefix = "i"
+  val SectorPrefix = "s"
+  val allColumns = companyColumns.map(addPrefix(CompanyPrefix)(_)) ++
+    industryColumns.map(addPrefix(IndustryPrefix)(_)) ++
+    sectorColumns.map(addPrefix(SectorPrefix)(_))
+  val columnsAsString = allColumns.mkString(",")
+
+  private def addPrefix(prefix: String): String => String = (column: String) => s"$prefix.$column"
 }
 
 final case class PostgresRepository[F[_]: Async: ContextShift](
@@ -62,7 +73,9 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
 
     val sql = s"""
       select ${columnsAsString}
-        from companies
+        from companies $CompanyPrefix
+        join industries $IndustryPrefix on $IndustryPrefix.id = $CompanyPrefix.industry_id
+        join sectors $SectorPrefix on $SectorPrefix.id = $IndustryPrefix.sector_id
        limit ?
       offset ?
     """
@@ -76,8 +89,10 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
 
     val sql = s"""
       select ${columnsAsString}
-        from companies
-       where id = ?
+        from companies $CompanyPrefix
+        join industries $IndustryPrefix on $IndustryPrefix.id = $CompanyPrefix.industry_id
+        join sectors $SectorPrefix on $SectorPrefix.id = $IndustryPrefix.sector_id
+       where $CompanyPrefix.id = ?
     """
 
     val query = Query[String, CompanyRow](sql)
