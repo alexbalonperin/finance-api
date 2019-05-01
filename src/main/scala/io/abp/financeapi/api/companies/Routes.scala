@@ -24,8 +24,8 @@ final case class Routes[F[_]: Sync](
     Ok(companiesProgram.list(request).map(toResponse))
   }
 
-  GET / "companies" / pathVar[String]("id", "company identifier") |>> {
-    (id: String) =>
+  GET / "companies" / pathVar[Int]("id", "company identifier") |>> {
+    (id: Int) =>
       val request = CompaniesPrograms.GetRequest(Company.Id(id))
       Ok(companiesProgram.get(request).map(toResponse))
   }

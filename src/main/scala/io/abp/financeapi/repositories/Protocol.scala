@@ -22,7 +22,7 @@ object Protocol {
   )
 
   object CompanyRow {
-    case class Id(asString: String) extends AnyVal
+    case class Id(asInt: Int) extends AnyVal
     case class Name(asString: String) extends AnyVal
     case class Symbol(asString: String) extends AnyVal
     case class Liquidated(asBool: Boolean) extends AnyVal

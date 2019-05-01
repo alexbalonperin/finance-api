@@ -18,7 +18,7 @@ case class Company(
 )
 
 object Company {
-  case class Id(asString: String) extends AnyVal
+  case class Id(asInt: Int) extends AnyVal
   case class Name(asString: String) extends AnyVal
   case class Symbol(asString: String) extends AnyVal
   case class Liquidated(asBool: Boolean) extends AnyVal
@@ -32,7 +32,7 @@ object Company {
 
   val dummy =
     Company(
-      Id("123"),
+      Id(123),
       Name("Apple"),
       Symbol("aapl"),
       Liquidated(false),

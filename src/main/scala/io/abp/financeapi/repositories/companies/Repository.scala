@@ -102,8 +102,8 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
        where $CompanyPrefix.id = ?
     """
 
-    val query = Query[String, CompanyRow](sql)
-      .stream(id.asString)
+    val query = Query[Int, CompanyRow](sql)
+      .stream(id.asInt)
     query.transact(connection.value).map(toDomain)
   }
 }
