@@ -58,7 +58,8 @@ object Repository {
     sectorColumns.map(addPrefix(SectorPrefix)(_))
   val columnsAsString = allColumns.mkString(",")
 
-  private def addPrefix(prefix: String): String => String = (column: String) => s"$prefix.$column"
+  private def addPrefix(prefix: String): String => String =
+    (column: String) => s"$prefix.$column"
 }
 
 final case class PostgresRepository[F[_]: Async: ContextShift](

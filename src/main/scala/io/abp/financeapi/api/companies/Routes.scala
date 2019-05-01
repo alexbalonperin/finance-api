@@ -16,12 +16,15 @@ final case class Routes[F[_]: Sync](
 ) extends RhoRoutes[F] {
   import CustomQueryParsers._
 
-  GET / "companies" +? param[NonNegInt]("limit", DefaultLimit) & param[NonNegInt]("offset", DefaultOffset) |>> { (limit: NonNegInt, offset: NonNegInt) =>
-      val request = CompaniesPrograms.ListRequest(limit, offset)
-      Ok(companiesProgram.list(request).map(toResponse))
+  GET / "companies" +? param[NonNegInt]("limit", DefaultLimit) & param[
+    NonNegInt
+  ]("offset", DefaultOffset) |>> { (limit: NonNegInt, offset: NonNegInt) =>
+    val request = CompaniesPrograms.ListRequest(limit, offset)
+    Ok(companiesProgram.list(request).map(toResponse))
   }
 
-  GET / "companies" / pathVar[String]("id", "company identifier") |>> { (id: String) =>
+  GET / "companies" / pathVar[String]("id", "company identifier") |>> {
+    (id: String) =>
       val request = CompaniesPrograms.GetRequest(Company.Id(id))
       Ok(companiesProgram.get(request).map(toResponse))
   }

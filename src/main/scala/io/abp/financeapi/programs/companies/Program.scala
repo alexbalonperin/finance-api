@@ -31,7 +31,6 @@ final case class Program[F[_]](
   }
 }
 
-
 final case class Dummy[F[_]: Monad]() extends Algebra[F] {
   def list(
       request: Program.ListRequest
@@ -41,8 +40,9 @@ final case class Dummy[F[_]: Monad]() extends Algebra[F] {
     )
   )
 
-  def get(request: Program.GetRequest): fs2.Stream[F, Company] = fs2.Stream.eval(
-    Monad[F].pure(Company.dummy.copy(id = request.id))
+  def get(request: Program.GetRequest): fs2.Stream[F, Company] =
+    fs2.Stream.eval(
+      Monad[F].pure(Company.dummy.copy(id = request.id))
     )
 }
 

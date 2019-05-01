@@ -8,16 +8,16 @@ object Protocol {
   import CompanyRow._
 
   case class CompanyRow(
-    id: Id,
-    name: Name,
-    symbol: Symbol,
-    liquidated: Liquidated,
-    delisted: Delisted,
-    active: Active,
-    lastTradeDate: Option[LastTradeDate],
-    firstTradeDate: Option[FirstTradeDate],
-    industry: Industry,
-    sector: Sector
+      id: Id,
+      name: Name,
+      symbol: Symbol,
+      liquidated: Liquidated,
+      delisted: Delisted,
+      active: Active,
+      lastTradeDate: Option[LastTradeDate],
+      firstTradeDate: Option[FirstTradeDate],
+      industry: Industry,
+      sector: Sector
   )
 
   object CompanyRow {

@@ -15,15 +15,19 @@ import io.scalaland.chimney.dsl._
 
 object Protocol {
 
-  implicit val config: Configuration = Configuration.default
-    .withSnakeCaseMemberNames
-    .withSnakeCaseConstructorNames
+  implicit val config: Configuration =
+    Configuration.default.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
 
-  implicit val encoder: Encoder[CompanyResponse] = deriveEncoder[CompanyResponse]
-  implicit def toResponse[F[_]](company: Stream[F, Company]): Stream[F, CompanyResponse] = company.map(toResponse)
-  def toResponse[F[_]](company: Company): CompanyResponse = company.into[CompanyResponse].transform
+  implicit val encoder: Encoder[CompanyResponse] =
+    deriveEncoder[CompanyResponse]
+  implicit def toResponse[F[_]](
+      company: Stream[F, Company]
+  ): Stream[F, CompanyResponse] = company.map(toResponse)
+  def toResponse[F[_]](company: Company): CompanyResponse =
+    company.into[CompanyResponse].transform
 
-  implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
+  implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]
+      : EntityEncoder[F, A] = jsonEncoderOf[F, A]
   implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
 
   private def streamArrayToString[F[_]: Sync, A](
@@ -41,16 +45,16 @@ object Protocol {
   import CompanyResponse._
 
   case class CompanyResponse(
-    id: Id,
-    name: Name,
-    symbol: Symbol,
-    liquidated: Liquidated,
-    delisted: Delisted,
-    active: Active,
-    lastTradeDate: Option[LastTradeDate],
-    firstTradeDate: Option[FirstTradeDate],
-    industry: Industry,
-    sector: Sector
+      id: Id,
+      name: Name,
+      symbol: Symbol,
+      liquidated: Liquidated,
+      delisted: Delisted,
+      active: Active,
+      lastTradeDate: Option[LastTradeDate],
+      firstTradeDate: Option[FirstTradeDate],
+      industry: Industry,
+      sector: Sector
   )
 
   object CompanyResponse {

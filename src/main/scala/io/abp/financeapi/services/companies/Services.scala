@@ -19,7 +19,7 @@ object Services {
     new Default[F](companiesRepository)
 
   def dummy[F[_]: Sync]()(
-  ): Algebra[F] =
+      ): Algebra[F] =
     new Dummy[F]()
 
   final case class ListRequest(limit: NonNegInt, offset: NonNegInt)
