@@ -13,7 +13,8 @@ case class Company(
     lastTradeDate: Option[LastTradeDate],
     firstTradeDate: Option[FirstTradeDate],
     industry: Industry,
-    sector: Sector
+    sector: Sector,
+    market: Market
 )
 
 object Company {
@@ -27,6 +28,7 @@ object Company {
   case class FirstTradeDate(asDate: LocalDate) extends AnyVal
   case class Industry(asString: String) extends AnyVal
   case class Sector(asString: String) extends AnyVal
+  case class Market(asString: String) extends AnyVal
 
   val dummy =
     Company(
@@ -39,6 +41,7 @@ object Company {
       Some(LastTradeDate(LocalDate.now)),
       Some(FirstTradeDate(LocalDate.now.minusYears(10))),
       Industry("Computer Software: Prepackaged Software"),
-      Sector("Technology")
+      Sector("Technology"),
+      Market("NYSE")
     )
 }

@@ -2,7 +2,8 @@ package io.abp.financeapi.api.companies
 
 import cats.effect.Sync
 import eu.timepit.refined.types.numeric.NonNegInt
-import io.abp.financeapi.api.Protocol.CompanyResponse._
+import io.abp.financeapi.api.Protocol._
+import io.abp.financeapi.api.companies.Protocol.CompanyResponse._
 import io.abp.financeapi.api._
 import io.abp.financeapi.api.utils.CustomQueryParsers
 import io.abp.financeapi.programs._

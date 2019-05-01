@@ -1,22 +1,14 @@
 package io.abp.financeapi.api
 
-import java.time.LocalDate
 import cats.effect.Sync
 import fs2.Stream
-import io.abp.financeapi.domain.Company
 import io.circe.fs2._
 import io.circe.generic.extras.encoding.UnwrappedEncoder
-import io.circe.generic.extras.Configuration
-import io.circe.generic.extras.semiauto.deriveEncoder
 import io.circe.{Encoder, Json}
-import org.http4s.circe.jsonEncoderOf
 import org.http4s.EntityEncoder
-import io.scalaland.chimney.dsl._
+import org.http4s.circe.jsonEncoderOf
 
 object Protocol {
-
-  implicit val config: Configuration =
-    Configuration.default.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
 
   implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]
       : EntityEncoder[F, A] = jsonEncoderOf[F, A]
@@ -33,44 +25,5 @@ object Protocol {
       stream: Stream[F, A]
   )(implicit E: Encoder[A]): Stream[F, Json] =
     streamArrayToString(stream).through(stringArrayParser)
-
-  import CompanyResponse._
-
-  case class CompanyResponse(
-      id: Id,
-      name: Name,
-      symbol: Symbol,
-      liquidated: Liquidated,
-      delisted: Delisted,
-      active: Active,
-      lastTradeDate: Option[LastTradeDate],
-      firstTradeDate: Option[FirstTradeDate],
-      industry: Industry,
-      sector: Sector
-  )
-
-  object CompanyResponse {
-    case class Id(asString: String) extends AnyVal
-    case class Name(asString: String) extends AnyVal
-    case class Symbol(asString: String) extends AnyVal
-    case class Liquidated(asBool: Boolean) extends AnyVal
-    case class Delisted(asBool: Boolean) extends AnyVal
-    case class Active(asBool: Boolean) extends AnyVal
-    case class LastTradeDate(asDate: LocalDate) extends AnyVal
-    case class FirstTradeDate(asDate: LocalDate) extends AnyVal
-    case class Industry(asString: String) extends AnyVal
-    case class Sector(asString: String) extends AnyVal
-
-    implicit val encoder: Encoder[CompanyResponse] =
-      deriveEncoder[CompanyResponse]
-
-    implicit def toResponse[F[_]](
-        company: Stream[F, Company]
-    ): Stream[F, CompanyResponse] = company.map(toResponse)
-
-    def toResponse[F[_]](company: Company): CompanyResponse =
-      company.into[CompanyResponse].transform
-
-  }
 
 }

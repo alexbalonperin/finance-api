@@ -1,13 +1,18 @@
-package io.abp.financeapi.repositories
+package io.abp.financeapi.api.companies
 
-import java.time.LocalDate
+import fs2.Stream
+import io.abp.financeapi.api.Protocol.valueClassEncoder
 import io.abp.financeapi.domain.Company
+import io.circe.Encoder
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.deriveEncoder
 import io.scalaland.chimney.dsl._
+import java.time.LocalDate
 
 object Protocol {
-  import CompanyRow._
+  import CompanyResponse._
 
-  case class CompanyRow(
+  case class CompanyResponse(
       id: Id,
       name: Name,
       symbol: Symbol,
@@ -21,8 +26,8 @@ object Protocol {
       market: Market
   )
 
-  object CompanyRow {
-    case class Id(asString: String) extends AnyVal
+  object CompanyResponse {
+    case class Id(asInt: Int) extends AnyVal
     case class Name(asString: String) extends AnyVal
     case class Symbol(asString: String) extends AnyVal
     case class Liquidated(asBool: Boolean) extends AnyVal
@@ -33,7 +38,19 @@ object Protocol {
     case class Industry(asString: String) extends AnyVal
     case class Sector(asString: String) extends AnyVal
     case class Market(asString: String) extends AnyVal
-  }
 
-  def toDomain(company: CompanyRow): Company = company.into[Company].transform
+    implicit val config: Configuration =
+      Configuration.default.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
+
+    implicit val encoder: Encoder[CompanyResponse] =
+      deriveEncoder[CompanyResponse]
+
+    implicit def toResponse[F[_]](
+        company: Stream[F, Company]
+    ): Stream[F, CompanyResponse] = company.map(toResponse)
+
+    def toResponse[F[_]](company: Company): CompanyResponse =
+      company.into[CompanyResponse].transform
+
+  }
 }

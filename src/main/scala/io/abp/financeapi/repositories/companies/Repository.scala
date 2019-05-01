@@ -49,13 +49,17 @@ object Repository {
   )
   val industryColumns = List("name")
   val sectorColumns = List("name")
+  val marketColumns = List("name")
 
   val CompanyPrefix = "c"
   val IndustryPrefix = "i"
   val SectorPrefix = "s"
+  val MarketPrefix = "m"
+
   val allColumns = companyColumns.map(addPrefix(CompanyPrefix)(_)) ++
     industryColumns.map(addPrefix(IndustryPrefix)(_)) ++
-    sectorColumns.map(addPrefix(SectorPrefix)(_))
+    sectorColumns.map(addPrefix(SectorPrefix)(_)) ++
+    marketColumns.map(addPrefix(MarketPrefix)(_))
   val columnsAsString = allColumns.mkString(",")
 
   private def addPrefix(prefix: String): String => String =
@@ -77,6 +81,7 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
         from companies $CompanyPrefix
         join industries $IndustryPrefix on $IndustryPrefix.id = $CompanyPrefix.industry_id
         join sectors $SectorPrefix on $SectorPrefix.id = $IndustryPrefix.sector_id
+        join markets $MarketPrefix on $MarketPrefix.id = $CompanyPrefix.market_id
        limit ?
       offset ?
     """
@@ -93,6 +98,7 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
         from companies $CompanyPrefix
         join industries $IndustryPrefix on $IndustryPrefix.id = $CompanyPrefix.industry_id
         join sectors $SectorPrefix on $SectorPrefix.id = $IndustryPrefix.sector_id
+        join markets $MarketPrefix on $MarketPrefix.id = $CompanyPrefix.market_id
        where $CompanyPrefix.id = ?
     """
 
