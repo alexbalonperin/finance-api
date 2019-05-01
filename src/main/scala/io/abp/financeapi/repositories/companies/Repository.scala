@@ -60,7 +60,12 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
 
   def list(limit: NonNegInt, offset: NonNegInt): fs2.Stream[F, Company] = {
 
-    val sql = s"""select ${columnsAsString} from companies limit ? offset ?"""
+    val sql = s"""
+      select ${columnsAsString}
+        from companies
+       limit ?
+      offset ?
+    """
 
     val query = Query[(NonNegInt, NonNegInt), CompanyRow](sql)
       .stream((limit, offset))
@@ -69,7 +74,11 @@ final case class PostgresRepository[F[_]: Async: ContextShift](
 
   def get(id: Company.Id): fs2.Stream[F, Company] = {
 
-    val sql = s"""select ${columnsAsString} from companies where id = ?"""
+    val sql = s"""
+      select ${columnsAsString}
+        from companies
+       where id = ?
+    """
 
     val query = Query[String, CompanyRow](sql)
       .stream(id.asString)
