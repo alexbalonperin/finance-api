@@ -18,14 +18,6 @@ object Protocol {
   implicit val config: Configuration =
     Configuration.default.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
 
-  implicit val encoder: Encoder[CompanyResponse] =
-    deriveEncoder[CompanyResponse]
-  implicit def toResponse[F[_]](
-      company: Stream[F, Company]
-  ): Stream[F, CompanyResponse] = company.map(toResponse)
-  def toResponse[F[_]](company: Company): CompanyResponse =
-    company.into[CompanyResponse].transform
-
   implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]
       : EntityEncoder[F, A] = jsonEncoderOf[F, A]
   implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
@@ -68,6 +60,17 @@ object Protocol {
     case class FirstTradeDate(asDate: LocalDate) extends AnyVal
     case class Industry(asString: String) extends AnyVal
     case class Sector(asString: String) extends AnyVal
+
+    implicit val encoder: Encoder[CompanyResponse] =
+      deriveEncoder[CompanyResponse]
+
+    implicit def toResponse[F[_]](
+        company: Stream[F, Company]
+    ): Stream[F, CompanyResponse] = company.map(toResponse)
+
+    def toResponse[F[_]](company: Company): CompanyResponse =
+      company.into[CompanyResponse].transform
+
   }
 
 }
